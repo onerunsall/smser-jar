@@ -18,7 +18,7 @@ public class Initiator {
 			throw new RuntimeException("environment有误");
 
 		InputStream in = Initiator.class.getClassLoader()
-				.getResourceAsStream("com/zhongan/sms_launcher/mainConfig_" + constant.environment + ".properties");
+				.getResourceAsStream("com/zhongan/sms/launcher/mainConfig_" + constant.environment + ".properties");
 		Properties properties = new Properties();
 		properties.load(new InputStreamReader(in, constant.CHARSET));
 		in.close();
