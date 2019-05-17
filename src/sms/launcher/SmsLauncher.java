@@ -31,7 +31,6 @@ public class SmsLauncher {
 	}
 
 	public void sendTplSms(List<String> mobiles, String businessCode, List<String> contents) {
-		logger.info(mobiles);
 		String mobile = "";
 		for (int i = 0; i < mobiles.size(); i++) {
 			if (i == 0)
@@ -39,7 +38,6 @@ public class SmsLauncher {
 			else
 				mobile = mobile + "," + mobiles.get(i);
 		}
-		logger.info(mobile);
 		msLauncher.sendTplSms(mobile, msTpls.get(businessCode), contents);
 	}
 
