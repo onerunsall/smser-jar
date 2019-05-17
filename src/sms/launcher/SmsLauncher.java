@@ -37,7 +37,7 @@ public class SmsLauncher {
 			if (i == 0)
 				mobile = mobile + mobiles.get(i);
 			else
-				mobile = "," + mobile + mobiles.get(i);
+				mobile = mobile + "," + mobiles.get(i);
 		}
 		logger.info(mobile);
 		msLauncher.sendTplSms(mobile, msTpls.get(businessCode), contents);
