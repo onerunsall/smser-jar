@@ -33,28 +33,34 @@ public class SmsLauncher {
 	}
 
 	public void sendTplSms(List<String> mobiles, String businessCode, List<String> contents) {
-		String mobile = "";
-		String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
-		Pattern p = Pattern.compile(regex);
-		for (int i = 0; i < mobiles.size(); i++) {
-			if (mobiles.get(i) == null || mobiles.get(i).length() != 11)
-				return;
-			if (!p.matcher(mobiles.get(i)).matches())
-				return;
-			if (i == 0)
-				mobile = mobile + mobiles.get(i);
-			else
-				mobile = mobile + "," + mobiles.get(i);
-		}
-		msLauncher.sendTplSms(mobile, msTpls.get(businessCode), contents);
+		sendTplSms(mobiles.toArray(new String[] {}), businessCode, contents.toArray(new String[] {}));
 	}
 
 	public void sendTplSms(String[] mobiles, String businessCode, List<String> contents) {
-		sendTplSms(Arrays.asList(mobiles), msTpls.get(businessCode), contents);
+		sendTplSms(mobiles, businessCode, contents.toArray(new String[] {}));
+	}
+
+	public void sendTplSms(List<String> mobiles, String businessCode, String... contents) {
+		sendTplSms(mobiles.toArray(new String[] {}), businessCode, contents);
 	}
 
 	public void sendTplSms(String[] mobiles, String businessCode, String... contents) {
-		sendTplSms(Arrays.asList(mobiles), msTpls.get(businessCode), Arrays.asList(contents));
+		String mobile = "";
+		String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
+		Pattern p = Pattern.compile(regex);
+		for (int i = 0; i < mobiles.length; i++) {
+			if (mobiles[i] == null || mobiles[i].length() != 11)
+				continue;
+			if (!p.matcher(mobiles[i]).matches())
+				continue;
+			if (i == 0)
+				mobile = mobile + mobiles[i];
+			else
+				mobile = mobile + "," + mobiles[i];
+		}
+		if (mobile.startsWith(","))
+			mobile = mobile.substring(1);
+		msLauncher.sendTplSms(mobile, msTpls.get(businessCode), Arrays.asList(contents));
 	}
 
 	public void sendTplSms(String mobile, String businessCode, List<String> contents) {
@@ -62,7 +68,7 @@ public class SmsLauncher {
 	}
 
 	public void sendTplSms(String mobile, String businessCode, String... contents) {
-		sendTplSms(mobile, msTpls.get(businessCode), Arrays.asList(contents));
+		sendTplSms(mobile, businessCode, Arrays.asList(contents));
 	}
 
 }
