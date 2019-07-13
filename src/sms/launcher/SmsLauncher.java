@@ -17,58 +17,71 @@ import org.apache.log4j.Logger;
 public class SmsLauncher {
 	private static Logger logger = Logger.getLogger(SmsLauncher.class);
 
-	MsLauncher msLauncher = null;
-	Map<String, String> msTpls = new HashMap();
+	private MeishengSmsLauncher msLauncher = null;
+	private Map<String, String> msBsToTpl = new HashMap();
+
+	private AliyunSmsLauncher aliyunSmsLauncher = null;
+	private Map<String, String> aliyunBsToTpl = new HashMap();
+
+	public void setSignName(String signName) {
+		aliyunSmsLauncher.signName = signName;
+	}
+
+	public void closeMeisheng() {
+		logger.info("close aliyunSmsLauncher");
+		msLauncher.open = false;
+	}
 
 	public void registerMeisheng(String account, String password, String veryCode) {
-		msLauncher = new MsLauncher(account, password, veryCode);
+		logger.info("register meishengSmsLauncher");
+		msLauncher = new MeishengSmsLauncher(account, password, veryCode);
 	}
 
-	public void registerMeishengTpl(String businessCode, String msTplId) {
-		msTpls.put(businessCode, msTplId);
+	public void registerMeishengTpl(String businessCode, String tplId, String... paramNames) {
+		msBsToTpl.put(businessCode, tplId);
+		msLauncher.tplParams.put(tplId, paramNames);
 	}
 
-	public void sendSms(String mobile, String content) {
-		msLauncher.sendSms(mobile, content);
+	public void closeAliyun() {
+		logger.info("close aliyunSmsLauncher");
+		aliyunSmsLauncher.open = false;
 	}
 
-	public void sendTplSms(List<String> mobiles, String businessCode, List<String> contents) {
-		sendTplSms(mobiles.toArray(new String[] {}), businessCode, contents.toArray(new String[] {}));
+	public void registerAliyun(String accessKeyId, String accessSecret) {
+		logger.info("register aliyunSmsLauncher");
+		aliyunSmsLauncher = new AliyunSmsLauncher(accessKeyId, accessSecret);
 	}
 
-	public void sendTplSms(String[] mobiles, String businessCode, List<String> contents) {
-		sendTplSms(mobiles, businessCode, contents.toArray(new String[] {}));
+	public void registerAliyunTpl(String businessCode, String tplId, String... paramNames) {
+		aliyunBsToTpl.put(businessCode, tplId);
+		aliyunSmsLauncher.tplToParamNames.put(tplId, paramNames);
 	}
 
-	public void sendTplSms(List<String> mobiles, String businessCode, String... contents) {
-		sendTplSms(mobiles.toArray(new String[] {}), businessCode, contents);
+	public void sendSms(String content, String... phones) {
+		if (msLauncher != null && msLauncher.open)
+			msLauncher.sendSms(content, phones);
+		else if (aliyunSmsLauncher != null && aliyunSmsLauncher.open)
+			msLauncher.sendSms(content, phones);
 	}
 
-	public void sendTplSms(String[] mobiles, String businessCode, String... contents) {
+	public void sendTplSms(String businessCode, String[] contents, String... phones) {
 		String mobile = "";
 		String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
 		Pattern p = Pattern.compile(regex);
-		for (int i = 0; i < mobiles.length; i++) {
-			if (mobiles[i] == null || mobiles[i].length() != 11)
+		for (int i = 0; i < phones.length; i++) {
+			if (phones[i] == null || phones[i].length() != 11)
 				continue;
-			if (!p.matcher(mobiles[i]).matches())
+			if (!p.matcher(phones[i]).matches())
 				continue;
 			if (i == 0)
-				mobile = mobile + mobiles[i];
+				mobile = mobile + phones[i];
 			else
-				mobile = mobile + "," + mobiles[i];
+				mobile = mobile + "," + phones[i];
 		}
 		if (mobile.startsWith(","))
 			mobile = mobile.substring(1);
-		msLauncher.sendTplSms(mobile, msTpls.get(businessCode), Arrays.asList(contents));
-	}
-
-	public void sendTplSms(String mobile, String businessCode, List<String> contents) {
-		msLauncher.sendTplSms(mobile, msTpls.get(businessCode), contents);
-	}
-
-	public void sendTplSms(String mobile, String businessCode, String... contents) {
-		sendTplSms(mobile, businessCode, Arrays.asList(contents));
+		if (msLauncher != null && msLauncher.open)
+			msLauncher.sendTplSms(msBsToTpl.get(businessCode), contents, phones);
 	}
 
 }

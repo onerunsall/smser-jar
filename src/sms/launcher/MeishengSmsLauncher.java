@@ -9,11 +9,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -21,10 +23,12 @@ import org.apache.log4j.Logger;
  * @Description: TODO
  *
  */
-public class MsLauncher {
-	private static Logger logger = Logger.getLogger(MsLauncher.class);
+public class MeishengSmsLauncher {
+	private static Logger logger = Logger.getLogger(MeishengSmsLauncher.class);
+	boolean open = true;
+	Map<String, String[]> tplParams = new HashMap();
 
-	public MsLauncher(String account, String password, String veryCode) {
+	public MeishengSmsLauncher(String account, String password, String veryCode) {
 		super();
 		this.account = account;
 		this.password = password;
@@ -65,19 +69,17 @@ public class MsLauncher {
 	 * UTF-8编码：/service/httpService/httpInterface.do?method=sendUtf8Msg
 	 * GBK编码：/service/httpService/httpInterface.do?method=sendGbkMsg
 	 * 
-	 * @param mobile
-	 *            手机号码, 多个号码以英文逗号隔开,最多支持100个号码
-	 * @param content
-	 *            短信内容
+	 * @param mobile  手机号码, 多个号码以英文逗号隔开,最多支持100个号码
+	 * @param content 短信内容
 	 * @return String xml字符串，格式请参考文档说明
 	 */
-	public String sendSms(String mobile, String content) {
+	public String sendSms(String content, String... phones) {
 		String sendSmsUrl = http_url + "/service/httpService/httpInterface.do?method=sendMsg";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("username", account);
 		params.put("password", password);
 		params.put("veryCode", veryCode);
-		params.put("mobile", mobile);
+		params.put("mobile", StringUtils.join(phones, ","));
 		params.put("content", content);
 		params.put("msgtype", "1");
 		params.put("code", "utf-8");
@@ -94,29 +96,25 @@ public class MsLauncher {
 	 * GBK编码：/service/httpService/httpInterface.do?method=sendGbkMsg 注意：
 	 * 1.发送模板短信变量值不能包含英文逗号和等号（, =） 2.特殊字符进行转义: + %2b 空格 %20 & %26 % %25
 	 * 
-	 * @param mobile
-	 *            手机号码
-	 * @param tplId
-	 *            模板编号，对应客户端模版编号
-	 * @param content
-	 *            模板参数值，以英文逗号隔开，如：@1@=某某,@2@=4293
+	 * @param mobile  手机号码
+	 * @param tplId   模板编号，对应客户端模版编号
+	 * @param content 模板参数值，以英文逗号隔开，如：@1@=某某,@2@=4293
 	 * @return xml字符串，格式请参考文档说明
 	 */
-	public String sendTplSms(String mobile, String tplId, List<String> contents) {
+	public String sendTplSms(String tplId, String[] contents, String... phones) {
 		String content = "";
-		for (int i = 0; i < contents.size(); i++) {
+		for (int i = 0; i < contents.length; i++) {
 			if (i == 0)
-				content = "@" + (i + 1) + "@=" + contents.get(i);
+				content = "@" + (i + 1) + "@=" + contents[i];
 			else
-				content = content + "," + "@" + (i + 1) + "@=" + contents.get(i);
-
+				content = content + "," + "@" + (i + 1) + "@=" + contents[i];
 		}
 		String sendTplSmsUrl = http_url + "/service/httpService/httpInterface.do?method=sendMsg";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("username", account);
 		params.put("password", password);
 		params.put("veryCode", veryCode);
-		params.put("mobile", mobile);
+		params.put("mobile", StringUtils.join(phones, ","));
 		params.put("content", content); // 变量值，以英文逗号隔开
 		params.put("msgtype", "2"); // 2-模板短信
 		params.put("tempid", tplId); // 模板编号
@@ -158,10 +156,8 @@ public class MsLauncher {
 
 	/***
 	 * 
-	 * @param apiUrl
-	 *            接口请求地址
-	 * @param paramsMap
-	 *            请求参数集合
+	 * @param apiUrl    接口请求地址
+	 * @param paramsMap 请求参数集合
 	 * @return xml字符串，格式请参考文档说明 String
 	 */
 	private String sendHttpPost(String apiUrl, Map<String, String> paramsMap) {
@@ -205,6 +201,23 @@ public class MsLauncher {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
+		List a = new ArrayList();
+		a.add("1");
+		a.add("2");
+		a.add("3");
+		a.add("4");
+		a.add("5");
+		a.add("6");
+
+		int from = -2;
+		int to = -2;
+
+		SmsLauncher smsLauncher = new SmsLauncher();
+		smsLauncher.registerMeisheng("JSM4103804", "pi0ebvw3", "lccwx6fzzqtv");
+		smsLauncher.registerMeishengTpl("systemMsg", "JSM41038-0014");
+		smsLauncher.registerMeishengTpl("verifyCode", "JSM41038-0007");
+
+		smsLauncher.sendTplSms("systemMsg", new String[] { "sadf" }, "17372202877");
 		// 查询账号余额
 		// System.out.println(getBalance());
 
@@ -213,8 +226,8 @@ public class MsLauncher {
 		// "您的验证码是8888,请注意保密，勿将验证码告知他人。"));
 
 		/**
-		 * 发送模板短信，修改接收短信的手机号码及调用的模板编号 注意： 1.发送模板短信变量值不能包含英文逗号和等号（, =）
-		 * 2.特殊字符进行转义: + %2b 空格 %20 & %26 % %25
+		 * 发送模板短信，修改接收短信的手机号码及调用的模板编号 注意： 1.发送模板短信变量值不能包含英文逗号和等号（, =） 2.特殊字符进行转义: + %2b
+		 * 空格 %20 & %26 % %25
 		 */
 		// System.out.println(sendTplSms("159********","模板编号","@1@=参数值1,@2@=参数值2"));
 
