@@ -67,14 +67,19 @@ public class AliyunSmsLauncher {
 				"BjLo3JzAA4Okw9Cf8bVJPzZSAjP31k");
 		IAcsClient client = new DefaultAcsClient(profile);
 		JSONObject jsonVb = new JSONObject();
-		jsonVb.put("datainfo", "asdf");
+		jsonVb.put("name", "1");
+		jsonVb.put("tel", "2");
+		jsonVb.put("house", "3");
+		jsonVb.put("carNo", "4");
+		jsonVb.put("time", "5");
+		System.out.println(jsonVb.toJSONString());
 		CommonRequest request = new CommonRequest();
 		request.setMethod(MethodType.POST);
 		request.setDomain("dysmsapi.aliyuncs.com");
 		request.setVersion("2017-05-25");
 		request.setAction("SendSms");
 		request.putQueryParameter("PhoneNumbers", "17372202877,17352402877");
-		request.putQueryParameter("TemplateCode", "SMS_170181381");
+		request.putQueryParameter("TemplateCode", "SMS_170665301");
 		request.putQueryParameter("SignName", "云房产");
 		request.putQueryParameter("TemplateParam", jsonVb.toJSONString());
 		try {

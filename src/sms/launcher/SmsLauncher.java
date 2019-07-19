@@ -1,10 +1,7 @@
 package sms.launcher;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -39,7 +36,7 @@ public class SmsLauncher {
 
 	public void registerMeishengTpl(String businessCode, String tplId, String... paramNames) {
 		msBsToTpl.put(businessCode, tplId);
-		msLauncher.tplParams.put(tplId, paramNames);
+		msLauncher.tplToParamNames.put(tplId, paramNames);
 	}
 
 	public void closeAliyun() {

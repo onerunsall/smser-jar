@@ -18,6 +18,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * @ClassName: ApiDemo
  * @Description: TODO
@@ -26,7 +28,7 @@ import org.apache.log4j.Logger;
 public class MeishengSmsLauncher {
 	private static Logger logger = Logger.getLogger(MeishengSmsLauncher.class);
 	boolean open = true;
-	Map<String, String[]> tplParams = new HashMap();
+	Map<String, String[]> tplToParamNames = new HashMap();
 
 	public MeishengSmsLauncher(String account, String password, String veryCode) {
 		super();
@@ -103,12 +105,14 @@ public class MeishengSmsLauncher {
 	 */
 	public String sendTplSms(String tplId, String[] contents, String... phones) {
 		String content = "";
-		for (int i = 0; i < contents.length; i++) {
+		String[] paramNames = tplToParamNames.get(tplId);
+		for (int i = 0; i < paramNames.length; i++) {
 			if (i == 0)
-				content = "@" + (i + 1) + "@=" + contents[i];
+				content = "@" + paramNames[i] + "@=" + contents[i];
 			else
-				content = content + "," + "@" + (i + 1) + "@=" + contents[i];
+				content = content + "," + "@" + paramNames[i] + "@=" + contents[i];
 		}
+
 		String sendTplSmsUrl = http_url + "/service/httpService/httpInterface.do?method=sendMsg";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("username", account);
