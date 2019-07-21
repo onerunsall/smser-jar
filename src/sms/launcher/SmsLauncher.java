@@ -57,8 +57,6 @@ public class SmsLauncher {
 	public void sendSms(String content, String... phones) {
 		if (msLauncher != null && msLauncher.open)
 			msLauncher.sendSms(content, phones);
-		else if (aliyunSmsLauncher != null && aliyunSmsLauncher.open)
-			msLauncher.sendSms(content, phones);
 	}
 
 	public void sendTplSms(String businessCode, String[] contents, String... phones) {
@@ -79,6 +77,8 @@ public class SmsLauncher {
 			mobile = mobile.substring(1);
 		if (msLauncher != null && msLauncher.open)
 			msLauncher.sendTplSms(msBsToTpl.get(businessCode), contents, phones);
+		else if (aliyunSmsLauncher != null && aliyunSmsLauncher.open)
+			aliyunSmsLauncher.sendTplSms(aliyunBsToTpl.get(businessCode), contents, phones);
 	}
 
 }
