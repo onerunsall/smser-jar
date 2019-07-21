@@ -42,7 +42,7 @@ public class AliyunSmsLauncher {
 		String[] paramNames = tplToParamNames.get(tplId);
 		JSONObject jsonVb = new JSONObject();
 		for (int i = 0; i < paramNames.length; i++) {
-			jsonVb.put(paramNames[i], StringUtils.defaultIfEmpty(contents[i], "无"));
+			jsonVb.put(paramNames[i], StringUtils.defaultIfEmpty(contents[i], "nnnnxxxx"));
 		}
 
 		CommonRequest request = new CommonRequest();
