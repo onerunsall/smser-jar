@@ -1,6 +1,7 @@
 package sms.launcher;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,8 @@ public class AliyunSmsLauncher {
 			jsonVb.put(paramNames[i], StringUtils.defaultIfEmpty(contents[i], "nnnnxxxx"));
 		}
 
+		logger.debug("contents: " + Arrays.toString(contents));
+		logger.debug("phones: " + Arrays.toString(phones));
 		CommonRequest request = new CommonRequest();
 		request.setMethod(MethodType.POST);
 		request.setDomain("dysmsapi.aliyuncs.com");
