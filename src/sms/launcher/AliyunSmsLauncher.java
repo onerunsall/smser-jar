@@ -39,7 +39,7 @@ public class AliyunSmsLauncher {
 		client = new DefaultAcsClient(profile);
 	}
 
-	public void sendTplSms(String tplId, String[] contents, String... phones) {
+	public void sendTplSms(String tplId, String[] contents, String... phones) throws ServerException, ClientException {
 		String[] paramNames = tplToParamNames.get(tplId);
 		JSONObject jsonVb = new JSONObject();
 		for (int i = 0; i < paramNames.length; i++) {
@@ -57,17 +57,11 @@ public class AliyunSmsLauncher {
 		request.putQueryParameter("TemplateCode", tplId);
 		request.putQueryParameter("SignName", signName);
 		request.putQueryParameter("TemplateParam", jsonVb.toJSONString());
-		try {
-			CommonResponse response = client.getCommonResponse(request);
-			System.out.println(response.getData());
-		} catch (ServerException e) {
-			e.printStackTrace();
-		} catch (ClientException e) {
-			e.printStackTrace();
-		}
+		CommonResponse response = client.getCommonResponse(request);
+		logger.debug(response.getData());
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		SmsLauncher sms = new SmsLauncher();
 		sms.registerAliyun("LTAIVZmL6LXnxJdC", "BjLo3JzAA4Okw9Cf8bVJPzZSAjP31k");
 
