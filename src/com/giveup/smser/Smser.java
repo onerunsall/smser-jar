@@ -1,4 +1,4 @@
-package sms.launcher;
+package com.giveup.smser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,14 +11,14 @@ import org.apache.log4j.Logger;
  * @Description: TODO
  *
  */
-public class SmsLauncher {
-	private static Logger logger = Logger.getLogger(SmsLauncher.class);
+public class Smser {
+	private static Logger logger = Logger.getLogger(Smser.class);
 
 	private MeishengSmsLauncher msLauncher = null;
-	private Map<String, String> msBsToTpl = new HashMap();
+	private Map<String, String> msSceneToTpl = new HashMap();
 
 	private AliyunSmsLauncher aliyunSmsLauncher = null;
-	private Map<String, String> aliyunBsToTpl = new HashMap();
+	private Map<String, String> aliyunSceneToTpl = new HashMap();
 
 	public void setSignName(String signName) {
 		aliyunSmsLauncher.signName = signName;
@@ -34,8 +34,8 @@ public class SmsLauncher {
 		msLauncher = new MeishengSmsLauncher(account, password, veryCode);
 	}
 
-	public void registerMeishengTpl(String businessCode, String tplId, String... paramNames) {
-		msBsToTpl.put(businessCode, tplId);
+	public void registerMeishengTpl(String scene, String tplId, String... paramNames) {
+		msSceneToTpl.put(scene, tplId);
 		msLauncher.tplToParamNames.put(tplId, paramNames);
 	}
 
@@ -49,8 +49,8 @@ public class SmsLauncher {
 		aliyunSmsLauncher = new AliyunSmsLauncher(accessKeyId, accessSecret);
 	}
 
-	public void registerAliyunTpl(String businessCode, String tplId, String... paramNames) {
-		aliyunBsToTpl.put(businessCode, tplId);
+	public void registerAliyunTpl(String scene, String tplId, String... paramNames) {
+		aliyunSceneToTpl.put(scene, tplId);
 		aliyunSmsLauncher.tplToParamNames.put(tplId, paramNames);
 	}
 
@@ -59,7 +59,7 @@ public class SmsLauncher {
 			msLauncher.sendSms(content, phones);
 	}
 
-	public void sendTplSms(String businessCode, String[] contents, String... phones) throws Exception {
+	public void sendTplSms(String scene, String[] contents, String... phones) throws Exception {
 		String mobile = "";
 		String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
 		Pattern p = Pattern.compile(regex);
@@ -76,9 +76,9 @@ public class SmsLauncher {
 		if (mobile.startsWith(","))
 			mobile = mobile.substring(1);
 		if (msLauncher != null && msLauncher.open)
-			msLauncher.sendTplSms(msBsToTpl.get(businessCode), contents, phones);
+			msLauncher.sendTplSms(msSceneToTpl.get(scene), contents, phones);
 		else if (aliyunSmsLauncher != null && aliyunSmsLauncher.open)
-			aliyunSmsLauncher.sendTplSms(aliyunBsToTpl.get(businessCode), contents, phones);
+			aliyunSmsLauncher.sendTplSms(aliyunSceneToTpl.get(scene), contents, phones);
 	}
 
 }

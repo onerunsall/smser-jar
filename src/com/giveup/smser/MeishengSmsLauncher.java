@@ -1,4 +1,4 @@
-﻿package sms.launcher;
+﻿package com.giveup.smser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -216,7 +216,7 @@ public class MeishengSmsLauncher {
 		int from = -2;
 		int to = -2;
 
-		SmsLauncher smsLauncher = new SmsLauncher();
+		Smser smsLauncher = new Smser();
 		smsLauncher.registerMeisheng("JSM4103804", "pi0ebvw3", "lccwx6fzzqtv");
 		smsLauncher.registerMeishengTpl("systemMsg", "JSM41038-0014");
 		smsLauncher.registerMeishengTpl("verifyCode", "JSM41038-0007");
